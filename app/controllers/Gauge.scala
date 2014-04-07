@@ -1,6 +1,5 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
 import org.joda.time.DateTime
 import play.api.libs.json._
