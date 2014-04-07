@@ -22,6 +22,9 @@ object Gauge extends Controller {
       case Some(listData) => {
         val jsonOut: JsValue = Json.obj(
           "path" -> path,
+          "count" -> gauge(path).size,
+          "max" -> gauge(path).map(_.duration).max,
+          "min" -> gauge(path).map(_.duration).min,
           "timerEvents" -> Json.toJson(gauge(path))
         )
 
