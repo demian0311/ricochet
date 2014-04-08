@@ -36,7 +36,7 @@ object Gauge extends Controller {
   def post(path: String) = Action { request =>
     val durationOpt = for{
       json <- request.body.asJson
-      duration <- json.\("duration").asOpt[Int]
+      duration <- (json \ "duration").asOpt[Int]
     } yield duration
 
     durationOpt match {
