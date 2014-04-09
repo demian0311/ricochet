@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.Actor
-import utils.{TimerEventPost, TimerEvent}
+import utils.{TimerEventRequest, TimerEventPost, TimerEvent}
 import play.api.mvc.{Results, Result}
 import scala.collection.mutable
 
@@ -15,11 +15,14 @@ class PersistorActor extends Actor with Results {
 
   def receive = {
     case TimerEventPost(path, TimerEvent(duration, dateTime)) => {
-      println("reactive: " + path)
+      println("TimerEventPost: " + path)
       persist(TimerEventPost(path, TimerEvent(duration, dateTime)))
       showState()
     }
-    //case TimerEventRequest(path)
+    case TimerEventRequest(path) => {
+      println("TimerEventRequest: " + path)
+      sender
+    }
     case _ => {
       println("don't know how to handle")
     }
