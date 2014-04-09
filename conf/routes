@@ -3,9 +3,12 @@
 # ~~~~
 
 # Home page
-#GET     /                   controllers.Application.index
-GET      /gauge/*path        controllers.Gauge.get(path)
-POST     /gauge/*path        controllers.Gauge.post(path)
+# VERB PATH                 Controller
+# ---- -------------------- -----------------------------------
+GET    /gauge/*path         controllers.Gauge.get(path)
+POST   /gauge/*path         controllers.Gauge.post(path)
+GET    /reactivegauge/*path controllers.ReactiveGauge.get(path)
+POST   /reactivegauge/*path controllers.ReactiveGauge.post(path)
 
 # Map static resources from the /public folder to the /assets URL path
 GET      /assets/*file        controllers.Assets.at(path="/public", file)

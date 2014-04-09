@@ -1,12 +1,11 @@
 package controllers
 
 import play.api.mvc._
-import org.joda.time.DateTime
 import play.api.libs.json._
 import scala.collection.mutable
+import utils.{TimerEventRequest, TimerEventPost, TimerEvent}
 
 object Gauge extends Controller {
-
   val gauge = collection.mutable.Map[String, collection.mutable.MutableList[TimerEvent]]()
 
   implicit val TimerEventWrites = new Writes[TimerEvent] {
@@ -17,20 +16,7 @@ object Gauge extends Controller {
   }
 
   def get(path: String) = Action { request =>
-    gauge.get(path) match {
-      case Some(listData) => {
-        val jsonOut: JsValue = Json.obj(
-          "path" -> path,
-          "count" -> gauge(path).size,
-          "max" -> gauge(path).map(_.duration).max,
-          "min" -> gauge(path).map(_.duration).min,
-          "timerEvents" -> Json.toJson(gauge(path))
-        )
-
-        Ok(jsonOut)
-      }
-      case None => NotFound("couldn't find gauge for: " + path)
-    }
+    report(TimerEventRequest(path))
   }
 
   def post(path: String) = Action { request =>
@@ -40,21 +26,43 @@ object Gauge extends Controller {
     } yield duration
 
     durationOpt match {
-      case Some(duration) => {
-        gauge.get(path) match {
-          case Some(gaugeList) => {
-            gaugeList += TimerEvent(duration)
-            Ok("")
-          }
-          case None => {
-            gauge += (path -> mutable.MutableList(TimerEvent(duration)))
-            Created("path: " + path)
-            }
-          }
-        }
+      case Some(duration) => persist(TimerEventPost(path, TimerEvent(duration)))
       case None => BadRequest("couldn't parse duration from JSON")
+    }
+  }
+
+  def report(timerEventRequest: TimerEventRequest): Result = {
+    Thread.sleep(500)
+
+    gauge.get(timerEventRequest.path) match {
+      case Some(listData) => {
+        val jsonOut: JsValue = Json.obj(
+          "path" -> timerEventRequest.path,
+          "count" -> listData.size,
+          "max" -> listData.map(_.duration).max,
+          "min" -> listData.map(_.duration).min,
+          "timerEvents" -> Json.toJson(listData)
+        )
+
+        Ok(jsonOut)
+      }
+      case None => NotFound("couldn't find gauge for: " + timerEventRequest.path)
+    }
+  }
+
+  def persist(timerEventPost: TimerEventPost): Result = {
+    Thread.sleep(500)
+
+    gauge.get(timerEventPost.path) match {
+      case Some(gaugeList) => {
+        gaugeList += timerEventPost.timerEvent
+        Ok("path: " + timerEventPost.path)
+      }
+      case None => {
+        gauge += (timerEventPost.path -> mutable.MutableList(timerEventPost.timerEvent))
+        Created("path: " + timerEventPost.path)
+      }
     }
   }
 }
 
-case class TimerEvent(duration: Int, dateTime: DateTime = DateTime.now())
