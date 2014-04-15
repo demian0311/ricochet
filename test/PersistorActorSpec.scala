@@ -8,7 +8,12 @@ import org.junit.runner._
 import akka.pattern.ask
 
 import play.api.test._
+import play.mvc.Http.Response
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
 import utils.{TimerEventRequest, TimerEvent, TimerEventPost}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @RunWith(classOf[JUnitRunner])
 class PersistorActorSpec extends Specification {
@@ -21,21 +26,25 @@ class PersistorActorSpec extends Specification {
     }
 
 
-    "respond to query" in new WithApplication {
-      //val inbox = inbox()
+    "respond to a good query with a 200" in new WithApplication {
       val system = ActorSystem("test")
       val persistorActor = system.actorOf(Props[PersistorActor], name = "persistorActor")
 
-      val timerEventRequest: TimerEventRequest = TimerEventRequest("foo/bar")
+      val timerEventRequest: TimerEventRequest = TimerEventRequest("foo/bar/respond/to/query")
 
 
       implicit val timeout = Timeout(5000)
-      val response = persistorActor ? timerEventRequest
-      println("response: " + response)
+      val actorResponse: Future[Any] = persistorActor ? timerEventRequest
+
+      Thread.sleep(500);
+
       /*
-      response.onSuccess{
-        theResponse -> println("theResponse: " + theResponse)
+      val simpleResponse: Response = actorResponse.onComplete{
+        case Success(theValue) => theValue
+        case Failure(theFailure) => theFailure
       }*/
+
+      Thread.sleep(500)
     }
   }
 }
