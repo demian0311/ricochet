@@ -9,9 +9,6 @@ time curl -s -k \
    --header "content-type: application/json" \
    "$HOST/gauge/foo/bar" 
 
-echo "\n\n"
-
-
 time curl -s -k \
    -X POST -d "$JSON" \
    --header "content-type: application/json" \
