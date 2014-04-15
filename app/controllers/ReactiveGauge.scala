@@ -5,7 +5,6 @@ import play.libs.Akka
 import actors.PersistorActor
 import akka.actor.Props
 import akka.util.Timeout
-import org.joda.time.DateTime
 import akka.pattern.ask
 import utils.{TimerEventRequest, TimerEvent, TimerEventPost}
 
@@ -24,7 +23,7 @@ object ReactiveGauge extends Controller {
       duration <- json.\("duration").asOpt[Int]
     } yield duration
 
-    persistorActor ! TimerEventPost(path, TimerEvent(durationOpt.get, DateTime.now()))
+    persistorActor ! TimerEventPost(path, TimerEvent(durationOpt.get))
     Ok("")
   }
 }
