@@ -7,6 +7,8 @@ import scala.collection.mutable
 import play.api.libs.json.{Writes, Json, JsValue}
 
 class PersistorActor extends Actor with Results {
+
+  // And, now the gauge needs to come out :)
   val gauge = collection.mutable.Map[String, collection.mutable.MutableList[TimerEvent]]()
 
   implicit val TimerEventWrites = new Writes[TimerEvent] {
