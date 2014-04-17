@@ -3,15 +3,17 @@ package controllers
 import play.api.mvc._
 import play.libs.Akka
 import actors.PersistorActor
-import akka.actor.Props
+import akka.actor.{ActorSystem, ActorRef, Props}
 import akka.util.Timeout
 import akka.pattern.ask
 import utils.{TimerEventRequest, TimerEvent, TimerEventPost}
 
 object ReactiveGauge extends Controller {
 
-  val persistorActor = Akka.system.actorOf(Props[PersistorActor], name = "persistorActor")
-  implicit val timeout = Timeout(5000)
+  implicit val timeout = Timeout(10000)
+
+  val system = ActorSystem("test")
+  val persistorActor = system.actorOf(Props[PersistorActor], name = "persistorActor")
 
   def get(path: String) = Action.async { request =>
     persistorActor.ask(TimerEventRequest(path)).mapTo[SimpleResult]

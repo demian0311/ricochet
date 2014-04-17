@@ -18,12 +18,9 @@ class PersistorActor extends Actor with Results {
 
   def receive = {
     case TimerEventPost(path, TimerEvent(duration, dateTime)) => {
-      println("TimerEventPost: " + path)
       persist(TimerEventPost(path, TimerEvent(duration, dateTime)))
-      showState()
     }
     case TimerEventRequest(path) => {
-      println("TimerEventRequest: " + path)
       sender.forward(report(TimerEventRequest(path)))
     }
     case _ => {
@@ -57,9 +54,5 @@ class PersistorActor extends Actor with Results {
       }
       case None => NotFound("couldn't find gauge for: " + timerEventRequest.path)
     }
-  }
-
-  def showState(): Unit = {
-    println("gauge: " + gauge)
   }
 }
