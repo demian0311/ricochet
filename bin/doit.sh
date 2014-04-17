@@ -9,7 +9,7 @@ do
       -X POST -d "$JSON" \
       --header "content-type: application/json" \
       "$HOST" &
-   sleep .25
+   sleep .01
 done
 
 time curl $HOST

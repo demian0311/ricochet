@@ -53,14 +53,16 @@ object Gauge extends Controller {
   def persist(timerEventPost: TimerEventPost): Result = {
     Thread.sleep(500)
 
-    gauge.get(timerEventPost.path) match {
-      case Some(gaugeList) => {
-        gaugeList += timerEventPost.timerEvent
-        Ok("path: " + timerEventPost.path)
-      }
-      case None => {
-        gauge += (timerEventPost.path -> mutable.MutableList(timerEventPost.timerEvent))
-        Created("path: " + timerEventPost.path)
+    this.synchronized {
+      gauge.get(timerEventPost.path) match {
+        case Some(gaugeList) => {
+          gaugeList += timerEventPost.timerEvent
+          Ok("path: " + timerEventPost.path)
+        }
+        case None => {
+          gauge += (timerEventPost.path -> mutable.MutableList(timerEventPost.timerEvent))
+          Created("path: " + timerEventPost.path)
+        }
       }
     }
   }

@@ -19,7 +19,6 @@ object GaugePersistence extends Results {
   }
 
   val mapOfTimerEvents = collection.mutable.Map[ String,  collection.mutable.MutableList[TimerEvent]]()
-  //val mapOfTimerEvents = Map[ String,  collection.mutable.MutableList[TimerEvent]]()
 
   def persist(timerEventPost: TimerEventPost) {
     Thread.sleep(500)

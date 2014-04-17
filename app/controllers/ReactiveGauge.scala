@@ -12,7 +12,6 @@ object ReactiveGauge extends Controller {
 
   implicit val timeout = Timeout(10000)
 
-  // holy cow, wish Akka docs would've been this simple
   // http://blog.evilmonkeylabs.com/2013/01/17/Distributing_Akka_Workloads_And_Shutting_Down_After/
   val system = ActorSystem("SimpleSystem")
   val persistorActor: ActorRef = system.actorOf(Props[PersistorActor].withRouter(
@@ -20,6 +19,7 @@ object ReactiveGauge extends Controller {
   ), name = "simpleRoutedActor")
 
   def get(path: String) = Action.async { request =>
+    // the implicit timeout is used
     persistorActor.ask(TimerEventRequest(path)).mapTo[SimpleResult]
   }
 
